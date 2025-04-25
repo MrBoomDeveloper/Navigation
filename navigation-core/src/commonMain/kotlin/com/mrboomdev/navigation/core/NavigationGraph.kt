@@ -4,27 +4,42 @@ import androidx.annotation.RestrictTo
 import androidx.compose.runtime.Composable
 import kotlin.reflect.KClass
 
-class NavigationGraph internal constructor(
+class NavigationGraph<T: Any> internal constructor(
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     val routes: MutableList<Pair<KClass<*>, @Composable ((Any) -> Unit)>>
 ) {
-    fun <T: Any> route(
+    internal var isClosed = false
+    
+    fun graph(
+        graph: NavigationGraph<T>
+    ) {
+        if(isClosed) {
+            throw IllegalStateException("Navigation graph cannot be modified after it's creation!")
+        }
+        
+        routes += graph.routes
+    }
+    
+    fun route(
         clazz: KClass<T>, 
         content: @Composable (T) -> Unit
     ) {
+        if(isClosed) {
+            throw IllegalStateException("Navigation graph cannot be modified after it's creation!")
+        }
+        
         @Suppress("UNCHECKED_CAST")
         routes += (clazz to content) as Pair<KClass<*>, @Composable (Any) -> Unit>
     }
-
-    inline fun <reified T: Any> route(
-        noinline content: @Composable (T) -> Unit
-    ) = route(T::class, content)
+    
+    inline fun <reified R: T> route(
+        noinline content: @Composable (R) -> Unit
+    ) {
+        @Suppress("UNCHECKED_CAST")
+        routes += (R::class to content) as Pair<KClass<*>, @Composable (Any) -> Unit>
+    }
 }
 
-fun navigationGraph(
-    scope: NavigationGraph.() -> Unit
-) = NavigationGraph(mutableListOf()).apply { scope() }
-
-operator fun NavigationGraph.plus(
-    graph: NavigationGraph
-) = NavigationGraph(this.routes.toMutableList().apply { addAll(graph.routes) })
+fun <T: Any> navigationGraph(
+    scope: NavigationGraph<T>.() -> Unit
+) = NavigationGraph<T>(mutableListOf()).apply { scope() }

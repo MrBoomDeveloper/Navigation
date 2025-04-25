@@ -16,13 +16,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import com.mrboomdev.navigation.core.currentNavigation
+import com.mrboomdev.navigation.core.TypeSafeNavigation
 import com.mrboomdev.navigation.jetpack.JetpackNavigation
 import kotlinx.serialization.Serializable
 
+val AppNavigation = TypeSafeNavigation(Routes::class)
+
 @Composable
 fun App() {
-    JetpackNavigation(
+    JetpackNavigation<Routes>(
         initialRoute = Routes.ScreenA,
         
         enterTransition = {
@@ -36,7 +38,7 @@ fun App() {
                     slideOutHorizontally(tween(350)) +
                     scaleOut(tween(250), targetScale = .95f)
         },
-    ) { 
+    ) {
         route<Routes.ScreenA> { ScreenA() }
         route<Routes.ScreenB> { ScreenB(it.value) }
     }
@@ -44,16 +46,16 @@ fun App() {
 
 sealed interface Routes {
     @Serializable
-    data object ScreenA
+    data object ScreenA: Routes
     
     @Serializable
-    data class ScreenB(val value: String)
+    data class ScreenB(val value: String): Routes
 }
 
 @Composable
 fun ScreenA() {
     var text by rememberSaveable { mutableStateOf("") }
-    val navigation = currentNavigation()
+    val navigation = AppNavigation.current()
 
     Column {
         Text("Screen A")
@@ -71,7 +73,7 @@ fun ScreenA() {
 
 @Composable
 fun ScreenB(value: String) {
-    val navigation = currentNavigation()
+    val navigation = AppNavigation.current()
     
     Column {
         Text("Screen B")

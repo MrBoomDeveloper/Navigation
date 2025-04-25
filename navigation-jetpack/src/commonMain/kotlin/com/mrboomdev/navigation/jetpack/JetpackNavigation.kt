@@ -20,18 +20,19 @@ import androidx.navigation.createGraph
 import androidx.navigation.navArgument
 import androidx.savedstate.read
 import com.mrboomdev.navigation.core.LocalNavigation
+import com.mrboomdev.navigation.core.Navigation
 import com.mrboomdev.navigation.core.NavigationGraph
 import com.mrboomdev.navigation.core.navigationGraph
+import kotlin.reflect.KClass
 
-/**
- * Useful for multi-module applications.
- */
 @Composable
-fun JetpackNavigation(
+@PublishedApi
+internal fun <T: Any> JetpackNavigation(
     modifier: Modifier = Modifier,
     state: NavHostController = rememberNavController(),
-    initialRoute: Any,
-    graph: NavigationGraph,
+    initialRoute: T,
+    type: KClass<T>,
+    graph: NavigationGraph<T>,
     
     enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
         { fadeIn(animationSpec = tween(700)) },
@@ -42,7 +43,7 @@ fun JetpackNavigation(
     val currentNav = LocalNavigation.current
 
     val navigation = remember(currentNav, state) {
-        JetpackNavigationImpl(currentNav, state)
+        JetpackNavigationImpl<T>(currentNav, type, state)
     }
     
     val jetpackGraph = remember(currentNav, state, initialRoute) {
@@ -55,7 +56,7 @@ fun JetpackNavigation(
                     },
 
                     arguments = listOf(navArgument("data") {
-                        type = NavType.StringType
+                        this.type = NavType.StringType
                     })
                 ) { entry ->
                     routeContent(fromRouteData(routeClass,
@@ -64,9 +65,10 @@ fun JetpackNavigation(
             }
         }
     }
-    
+
+    @Suppress("UNCHECKED_CAST")
     CompositionLocalProvider(
-        LocalNavigation provides navigation
+        LocalNavigation provides (navigation as Navigation<Any>?)
     ) {
         NavHost(
             modifier = modifier,
@@ -80,27 +82,25 @@ fun JetpackNavigation(
     }
 }
 
-/**
- * Useful for single-module applications.
- */
 @Composable
-fun JetpackNavigation(
+inline fun <reified T: Any> JetpackNavigation(
     modifier: Modifier = Modifier,
     state: NavHostController = rememberNavController(),
-    initialRoute: Any,
-    
-    enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
+    initialRoute: T,
+
+    noinline enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
         { fadeIn(animationSpec = tween(700)) },
 
-    exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition =
+    noinline exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition =
         { fadeOut(animationSpec = tween(700)) },
-    
-    scope: NavigationGraph.() -> Unit
+
+    noinline scope: NavigationGraph<T>.() -> Unit
 ) = JetpackNavigation(
     modifier = modifier,
     state = state,
     initialRoute = initialRoute,
     enterTransition = enterTransition,
     exitTransition = exitTransition,
+    type = T::class,
     graph = remember(scope) { navigationGraph(scope) }
 )
