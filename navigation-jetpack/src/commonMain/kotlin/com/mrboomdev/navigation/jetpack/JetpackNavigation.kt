@@ -1,35 +1,29 @@
 package com.mrboomdev.navigation.jetpack
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.createGraph
-import androidx.navigation.navArgument
-import androidx.savedstate.read
-import com.mrboomdev.navigation.core.LocalNavigation
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
+import androidx.navigation.*
+import androidx.navigation.compose.*
+import androidx.savedstate.*
+import com.mrboomdev.navigation.core.*
 import com.mrboomdev.navigation.core.Navigation
-import com.mrboomdev.navigation.core.NavigationGraph
-import com.mrboomdev.navigation.core.navigationGraph
-import kotlin.reflect.KClass
+import kotlin.reflect.*
+
+class JetpackNavigationState internal constructor(internal val navController: NavHostController)
+
+@Composable
+fun rememberJetpackNavigationState(): JetpackNavigationState {
+    val navController = rememberNavController()
+    return remember(navController) { JetpackNavigationState(navController) }
+}
 
 @Composable
 @PublishedApi
 internal fun <T: Any> JetpackNavigation(
     modifier: Modifier = Modifier,
-    state: NavHostController = rememberNavController(),
+    state: JetpackNavigationState = rememberJetpackNavigationState(),
     initialRoute: T,
     type: KClass<T>,
     graph: NavigationGraph<T>,
@@ -43,27 +37,7 @@ internal fun <T: Any> JetpackNavigation(
     val currentNav = LocalNavigation.current
 
     val navigation = remember(currentNav, state) {
-        JetpackNavigationImpl<T>(currentNav, type, state)
-    }
-    
-    val jetpackGraph = remember(currentNav, state, initialRoute) {
-        state.createGraph(routeOf(initialRoute)) {
-            for((routeClass, routeContent) in graph.routes) {
-                composable(
-                    route = buildString {
-                        append(routeClass.qualifiedName)
-                        append("/{data}")
-                    },
-
-                    arguments = listOf(navArgument("data") {
-                        this.type = NavType.StringType
-                    })
-                ) { entry ->
-                    routeContent(fromRouteData(routeClass,
-                        entry.arguments?.read { getString("data") }!!))
-                }
-            }
-        }
+        JetpackNavigationImpl<T>(currentNav, type, state.navController)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -72,20 +46,56 @@ internal fun <T: Any> JetpackNavigation(
     ) {
         NavHost(
             modifier = modifier,
-            navController = state,
+            navController = state.navController,
             enterTransition = enterTransition,
             popEnterTransition = enterTransition,
             exitTransition = exitTransition,
             popExitTransition = exitTransition,
-            graph = jetpackGraph
-        )
+            
+            startDestination = routeOf(
+                destination = initialRoute,
+                resultKey = null
+            )
+        ) {
+            for((routeClass, routeContent) in graph.routes) {
+                composable(
+                    route = buildString {
+                        append(routeClass.qualifiedName)
+                        append("?data={data}&resultKey={resultKey}")
+                    },
+
+                    arguments = listOf(
+                        navArgument("data") {
+                            this.type = NavType.StringType
+                        },
+
+                        navArgument("resultKey") {
+                            this.type = NavType.StringType
+                            this.nullable = true
+                        }
+                    )
+                ) { entry ->
+                    val data = fromRouteData(routeClass, entry.arguments?.read { getString("data") }!!)
+                    val resultKey = entry.arguments?.read { getStringOrNull("resultKey") }
+                    val prevEntry = state.navController.previousBackStackEntry
+
+                    val scope = object : RouteScope {
+                        override val resulter = if(resultKey != null && prevEntry != null) {
+                            ResulterImpl(resultKey, prevEntry)
+                        } else null
+                    }
+
+                    routeContent(scope, data)
+                }
+            }
+        }
     }
 }
 
 @Composable
 inline fun <reified T: Any> JetpackNavigation(
     modifier: Modifier = Modifier,
-    state: NavHostController = rememberNavController(),
+    state: JetpackNavigationState = rememberJetpackNavigationState(),
     initialRoute: T,
 
     noinline enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =

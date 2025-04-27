@@ -1,12 +1,12 @@
 package com.mrboomdev.navigation.core
 
-import androidx.annotation.RestrictTo
-import androidx.compose.runtime.Composable
-import kotlin.reflect.KClass
+import androidx.annotation.*
+import androidx.compose.runtime.*
+import kotlin.reflect.*
 
 class NavigationGraph<T: Any> internal constructor(
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    val routes: MutableList<Pair<KClass<*>, @Composable ((Any) -> Unit)>>
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val routes: MutableList<Pair<KClass<*>, @Composable (RouteScope.(Any) -> Unit)>>
 ) {
     internal var isClosed = false
     
@@ -22,21 +22,21 @@ class NavigationGraph<T: Any> internal constructor(
     
     fun route(
         clazz: KClass<T>, 
-        content: @Composable (T) -> Unit
+        content: @Composable RouteScope.(T) -> Unit
     ) {
         if(isClosed) {
             throw IllegalStateException("Navigation graph cannot be modified after it's creation!")
         }
         
         @Suppress("UNCHECKED_CAST")
-        routes += (clazz to content) as Pair<KClass<*>, @Composable (Any) -> Unit>
+        routes += (clazz to content) as Pair<KClass<*>, @Composable RouteScope.(Any) -> Unit>
     }
     
     inline fun <reified R: T> route(
-        noinline content: @Composable (R) -> Unit
+        noinline content: @Composable RouteScope.(R) -> Unit
     ) {
         @Suppress("UNCHECKED_CAST")
-        routes += (R::class to content) as Pair<KClass<*>, @Composable (Any) -> Unit>
+        routes += (R::class to content) as Pair<KClass<*>, @Composable RouteScope.(Any) -> Unit>
     }
 }
 

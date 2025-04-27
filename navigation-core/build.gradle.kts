@@ -1,10 +1,15 @@
-import com.android.build.api.dsl.androidLibrary
+import com.vanniktech.maven.publish.*
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.multiplatform.android.library)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.maven.publish)
+    alias(libs.plugins.kotlin.serialization)
 }
+
+group = "ru.mrboomdev.navigation"
+version = "1.0.0"
 
 kotlin {
     jvm()
@@ -19,10 +24,47 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
+            implementation(libs.kotlinx.serialization.json)
         }
         
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
     }
+}
+
+mavenPublishing {
+    coordinates(group.toString(), "navigation-core", version.toString())
+
+    pom {
+        name = "Navigation by MrBoomDev"
+        description = "A simple navigation library for Compose Multiplatform projects."
+        url = "https://github.com/MrBoomDeveloper/Navigation"
+        inceptionYear = "2025"
+
+        licenses {
+            license {
+                name = "The Apache Licence, Version 2.0"
+                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                description = url
+            }
+        }
+
+        developers {
+            developer {
+                id = "mrboomdev"
+                name = "MrBoomDev"
+                url = "https://github.com/MrBoomDeveloper"
+            }
+        }
+
+        scm {
+            url = "https://github.com/MrBoomDeveloper/Navigation"
+            connection = "scm:git:git://github.com/MrBoomDeveloper/Navigation.git"
+            developerConnection = "scm:git:ssh://git@github.com/MrBoomDeveloper/Navigation.git"
+        }
+    }
+
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, false)
+    signAllPublications()
 }
