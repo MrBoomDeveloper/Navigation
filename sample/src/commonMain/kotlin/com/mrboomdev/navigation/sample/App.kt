@@ -12,6 +12,7 @@ import kotlinx.serialization.*
 
 val AppNavigation = TypeSafeNavigation(Routes::class)
 
+@OptIn(InternalNavigationApi::class)
 @Composable
 fun App() {
     JetpackNavigation<Routes>(
@@ -45,16 +46,23 @@ sealed interface Routes {
     @Serializable
     data object ScreenC: Routes {
         val resultContract = ResultContract<ScreenC, String>()
+        val resultContract2 = ResultContract<ScreenC, Boolean>()
     }
 }
 
 @Composable
 fun ScreenA() {
     var text by rememberSaveable { mutableStateOf("") }
+    var resultSaved by rememberSaveable { mutableStateOf(false) }
     val navigation = AppNavigation.current()
+
+    NavigationResult(Routes.ScreenC.resultContract2) {
+        resultSaved = it
+    }
 
     Column {
         Text("Screen A")
+        Text("Result from Screen C = $resultSaved")
         
         TextField(
             value = text,
@@ -75,6 +83,12 @@ fun ScreenA() {
         }) {
             Text("Clear and go to Screen B")
         }
+
+        Button({
+            navigation.pushForResult(Routes.ScreenC.resultContract2, Routes.ScreenC)
+        }) {
+            Text("Go to Screen C for a result")
+        }
     }
 }
 
@@ -92,11 +106,13 @@ fun ScreenB(value: String) {
         Text("Value = $value")
         Text("Result from Screen C = $resultSaved")
         
-        Button({ navigation.pop() }) {
+        Button({ navigation.safePop() }) {
             Text("Back")
         }
         
-        Button({ navigation.pushForResult(Routes.ScreenC) }) {
+        Button({ 
+            navigation.pushForResult(Routes.ScreenC.resultContract, Routes.ScreenC) 
+        }) {
             Text("Go to Screen C for a result")
         }
     }
@@ -105,20 +121,38 @@ fun ScreenB(value: String) {
 @Composable
 fun ScreenC(resulter: Resulter) {
     var text by rememberSaveable { mutableStateOf("") }
+    var toggle by remember { mutableStateOf(false) }
     val navigation = AppNavigation.current()
+    
+    LaunchedEffect(Unit) {
+        when(resulter.contract) {
+            Routes.ScreenC.resultContract -> resulter("")
+            Routes.ScreenC.resultContract2 -> resulter(false)
+        }
+    }
 
     Column {
         Text("Screen C")
 
-        TextField(
-            value = text,
-            onValueChange = { 
-                text = it
-                resulter(it)
-            }
-        )
-
-        Button({ navigation.pop() }) {
+        when(resulter.contract) {
+            Routes.ScreenC.resultContract -> TextField(
+                value = text,
+                onValueChange = {
+                    text = it
+                    resulter(it)
+                }
+            )
+            
+            Routes.ScreenC.resultContract2 -> Switch(
+                checked = toggle,
+                onCheckedChange = { 
+                    toggle = it 
+                    resulter(it)
+                }
+            )
+        }
+        
+        Button({ navigation.safePop() }) {
             Text("Back")
         }
     }

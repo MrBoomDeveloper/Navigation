@@ -6,6 +6,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
 internal class ResulterImpl(
+    override val contract: ResultContract<*, *>,
     private val key: String,
     private val navEntry: NavBackStackEntry
 ) : Resulter {

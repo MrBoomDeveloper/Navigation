@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "ru.mrboomdev.navigation"
-version = "1.0.0"
+version = "1.0.1"
 
 kotlin {
     jvm()
@@ -22,6 +22,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(libs.kotlin.reflect)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.kotlinx.serialization.json)

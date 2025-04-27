@@ -1,3 +1,5 @@
+@file:OptIn(InternalNavigationApi::class)
+
 package com.mrboomdev.navigation.jetpack
 
 import androidx.compose.runtime.*
@@ -26,6 +28,7 @@ fun <T: Any, A: T, B> Navigation<T>.resultOf(
 }
 
 fun <BaseRoute: Any, Route: BaseRoute> Navigation<BaseRoute>.pushForResult(
+    contract: ResultContract<out BaseRoute, *>,
     destination: Route,
     key: String = "result"
 ) {
@@ -33,7 +36,7 @@ fun <BaseRoute: Any, Route: BaseRoute> Navigation<BaseRoute>.pushForResult(
         throw UnsupportedOperationException("This is not an Jetpack Navigation!")
     }
     
-    navController.navigate(routeOf(destination, key))
+    navController.navigate(routeOf(destination, contract, key))
 }
 
 fun <BaseRoute: Any, Route: BaseRoute, Result: Any> Navigation<BaseRoute>.setResult(

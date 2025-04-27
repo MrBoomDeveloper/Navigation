@@ -1,12 +1,12 @@
+@file:OptIn(InternalNavigationApi::class)
+
 package com.mrboomdev.navigation.core
 
-import androidx.annotation.*
 import androidx.compose.runtime.*
 import kotlin.reflect.*
 
 class NavigationGraph<T: Any> internal constructor(
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val routes: MutableList<Pair<KClass<*>, @Composable (RouteScope.(Any) -> Unit)>>
+    @property:InternalNavigationApi val routes: MutableList<Pair<KClass<*>, @Composable (RouteScope.(Any) -> Unit)>>
 ) {
     internal var isClosed = false
     

@@ -1,3 +1,5 @@
+@file:OptIn(InternalNavigationApi::class)
+
 package com.mrboomdev.navigation.core
 
 import androidx.compose.runtime.*

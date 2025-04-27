@@ -10,11 +10,11 @@ internal class JetpackNavigationImpl<T: Any>(
     internal val navController: NavHostController
 ): Navigation<T> {
     override fun push(destination: T) {
-        navController.navigate(routeOf(destination, null))
+        navController.navigate(routeOf(destination, null, null))
     }
 
     override fun pop(): Boolean {
-        return navController.navigateUp()
+        return navController.popBackStack()
     }
 
     override fun clear() {
