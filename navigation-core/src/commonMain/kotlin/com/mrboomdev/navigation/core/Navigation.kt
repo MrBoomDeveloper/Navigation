@@ -1,35 +1,6 @@
-@file:OptIn(InternalNavigationApi::class)
-
 package com.mrboomdev.navigation.core
 
-import androidx.compose.runtime.*
-import kotlin.reflect.*
-
-@InternalNavigationApi
-val LocalNavigation = staticCompositionLocalOf<Navigation<Any>?> { null }
-
-/**
- * @see rootNavigation
- * @throws IllegalStateException If no navigation components were declared
- */
-@Composable
-fun currentNavigation(): Navigation<*> = LocalNavigation.current
-    ?: throw IllegalStateException("No navigation components were declared!")
-
-/**
- * @see currentNavigation
- * @throws IllegalStateException If no navigation components were declared
- */
-@Composable
-fun rootNavigation(): Navigation<*> {
-    var current = currentNavigation()
-    
-    while(true) {
-        current = current.parent ?: break
-    }
-    
-    return current
-}
+import kotlin.reflect.KClass
 
 interface Navigation<T: Any> {
     val type: KClass<T>

@@ -2,7 +2,6 @@ import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.library.multiplatform)
     alias(libs.plugins.maven.publish)
@@ -13,38 +12,39 @@ version = property("library.version")!!
 
 kotlin {
     applyDefaultHierarchyTemplate()
-    jvm()
-    
+//    jvm()
+
     androidLibrary {
         namespace = "com.mrboomdev.navigation.jetpack"
         compileSdk = 35
         minSdk = 24
     }
-    
+
     sourceSets {
         commonMain {
             dependencies {
                 api(project(":navigation-core"))
                 implementation(libs.kotlin.stdlib)
-                implementation(libs.kotlinx.serialization.json)
-                implementation(libs.compose.navigation)
+                implementation(libs.compose.navigation3.runtime)
+                implementation(libs.compose.navigation3.ui)
+                implementation(libs.compose.navigation3.viewmodel)
             }
         }
 
-        commonTest {
-            dependencies {
-                implementation(libs.kotlin.test)
-            }
-        }
+//        commonTest {
+//            dependencies {
+//                implementation(libs.kotlin.test)
+//            }
+//        }
     }
 }
 
 mavenPublishing {
-    coordinates(group.toString(), "navigation-jetpack", version.toString())
+    coordinates(group.toString(), "navigation-jetpack3", version.toString())
 
     pom {
-        name = "Navigation Jetpack by MrBoomDev"
-        description = "An implementation of the library made by using Jetpack Navigation made by Jetbrains."
+        name = "Jetpack Navigation3 by MrBoomDev"
+        description = "An implementation of the library made by using Jetpack Navigation3 made by Google."
         url = "https://github.com/MrBoomDeveloper/Navigation"
         inceptionYear = "2025"
 

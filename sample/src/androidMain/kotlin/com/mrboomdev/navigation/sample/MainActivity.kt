@@ -1,37 +1,44 @@
 package com.mrboomdev.navigation.sample
 
-import android.content.res.*
-import android.os.*
-import androidx.activity.*
-import androidx.activity.compose.*
-import androidx.compose.material3.*
+import android.os.Build
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.graphics.Color
 
 class MainActivity: ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         setContent {
             MaterialTheme(
                 colorScheme = when {
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isDarkTheme -> dynamicDarkColorScheme(this)
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> dynamicLightColorScheme(this)
-                    isDarkTheme -> darkColorScheme()
+                    supportsMaterialYou() && isSystemInDarkTheme() ->
+                        dynamicDarkColorScheme(this)
+
+                    supportsMaterialYou() ->
+                        dynamicLightColorScheme(this)
+
+                    isSystemInDarkTheme() -> darkColorScheme()
+
                     else -> lightColorScheme()
                 }
             ) {
                 CompositionLocalProvider(
-                    LocalContentColor provides Color.White
+                    LocalContentColor provides MaterialTheme.colorScheme.onBackground
                 ) {
                     App()
                 }
             }
         }
     }
-    
-    private val isDarkTheme get() = (
-        resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-    ) == Configuration.UI_MODE_NIGHT_YES
+
+    private fun supportsMaterialYou() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 }

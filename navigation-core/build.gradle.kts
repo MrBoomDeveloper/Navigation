@@ -1,17 +1,18 @@
-import com.vanniktech.maven.publish.*
+import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.kotlin.multiplatform.android.library)
-    alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.maven.publish)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.android.library.multiplatform)
+    alias(libs.plugins.maven.publish)
 }
 
 group = "ru.mrboomdev.navigation"
-version = "1.0.1"
+version = property("library.version")!!
 
 kotlin {
+    applyDefaultHierarchyTemplate()
     jvm()
     
     androidLibrary {

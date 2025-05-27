@@ -1,14 +1,17 @@
-import org.jetbrains.kotlin.gradle.dsl.*
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
     applyDefaultHierarchyTemplate()
+//    jvm()
 
     androidTarget {
         compilations.all {
@@ -29,10 +32,10 @@ kotlin {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.kotlinx.serialization.json)
 
-                implementation(libs.compose.runtime)
-                implementation(libs.compose.foundation)
-                implementation(libs.compose.ui)
-                implementation(libs.compose.material3)
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.ui)
+                implementation(compose.material3)
                 implementation(libs.compose.navigation)
             }
         }
@@ -74,5 +77,26 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
+
+compose.desktop {
+    application {
+        mainClass = "com.mrboomdev.navigation.sample.MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Msi)
+            packageName = "com.mrboomdev.navigation.sample"
+            packageVersion = "1.0.1"
+
+            windows {
+                console = true
+                perUserInstall = true
+                menu = true
+                menuGroup = "Navigation Sample"
+                includeAllModules = true
+                upgradeUuid = "6a7f9795-c323-4c10-a73a-55ac5506af02"
+            }
+        }
     }
 }

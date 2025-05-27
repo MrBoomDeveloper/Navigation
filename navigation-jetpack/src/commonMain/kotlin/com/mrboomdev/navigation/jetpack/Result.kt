@@ -2,16 +2,20 @@
 
 package com.mrboomdev.navigation.jetpack
 
-import androidx.compose.runtime.*
-import com.mrboomdev.navigation.core.*
-import kotlinx.serialization.json.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import com.mrboomdev.navigation.core.InternalNavigationApi
+import com.mrboomdev.navigation.core.Navigation
+import com.mrboomdev.navigation.core.ResultContract
+import com.mrboomdev.navigation.core.currentNavigation
+import kotlinx.serialization.json.Json
 
 @Composable
 fun <T: Any, A: T, B> Navigation<T>.resultOf(
     contract: ResultContract<A, B>,
     key: String = "result"
 ): B? {
-    if(this !is JetpackNavigationImpl<*>) {
+    if(this !is JetpackNavigation<*>) {
         throw UnsupportedOperationException("This is not an Jetpack Navigation!")
     }
     
@@ -32,7 +36,7 @@ fun <BaseRoute: Any, Route: BaseRoute> Navigation<BaseRoute>.pushForResult(
     destination: Route,
     key: String = "result"
 ) {
-    if(this !is JetpackNavigationImpl<*>) {
+    if(this !is JetpackNavigation<*>) {
         throw UnsupportedOperationException("This is not an Jetpack Navigation!")
     }
     
@@ -44,7 +48,7 @@ fun <BaseRoute: Any, Route: BaseRoute, Result: Any> Navigation<BaseRoute>.setRes
     result: Result,
     key: String = "result"
 ) {
-    if(this !is JetpackNavigationImpl<*>) {
+    if(this !is JetpackNavigation<*>) {
         throw UnsupportedOperationException("This is not an Jetpack Navigation!")
     }
 
@@ -61,7 +65,7 @@ fun <B> NavigationResult(
 ) {
     @Suppress("UNCHECKED_CAST")
     NavigationResult<Any, Any, B>(
-        navigation = currentNavigation() as Navigation<Any>,
+        navigation = currentNavigation(),
         contract as ResultContract<Any, B>,
         key,
         callback
@@ -75,7 +79,7 @@ fun <T: Any, A: T, B> NavigationResult(
     key: String = "result",
     callback: (B) -> Unit
 ) {
-    if(navigation !is JetpackNavigationImpl<*>) {
+    if(navigation !is JetpackNavigation<*>) {
         throw UnsupportedOperationException("This is not an Jetpack Navigation!")
     }
     

@@ -1,23 +1,40 @@
 package com.mrboomdev.navigation.sample
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.*
-import com.mrboomdev.navigation.core.*
-import com.mrboomdev.navigation.jetpack.*
-import kotlinx.serialization.*
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import com.mrboomdev.navigation.core.ResultContract
+import com.mrboomdev.navigation.core.Resulter
+import com.mrboomdev.navigation.core.TypeSafeNavigation
+import com.mrboomdev.navigation.core.safePop
+import com.mrboomdev.navigation.jetpack.JetpackNavigationHost
+import com.mrboomdev.navigation.jetpack.NavigationResult
+import com.mrboomdev.navigation.jetpack.pushForResult
+import com.mrboomdev.navigation.jetpack.rememberJetpackNavigation
+import kotlinx.serialization.Serializable
 
-val AppNavigation = TypeSafeNavigation(Routes::class)
+val AppNavigation = TypeSafeNavigation<Routes>()
 
-@OptIn(InternalNavigationApi::class)
 @Composable
 fun App() {
-    JetpackNavigation<Routes>(
-        initialRoute = Routes.ScreenA,
-        
+    JetpackNavigationHost<Routes>(
+        navigation = rememberJetpackNavigation(Routes.ScreenA),
         enterTransition = {
             fadeIn(tween(500)) +
                     slideInHorizontally(tween(350)) { it / 2 } +
@@ -39,10 +56,10 @@ fun App() {
 sealed interface Routes {
     @Serializable
     data object ScreenA: Routes
-    
+
     @Serializable
     data class ScreenB(val value: String): Routes
-    
+
     @Serializable
     data object ScreenC: Routes {
         val resultContract = ResultContract<ScreenC, String>()
