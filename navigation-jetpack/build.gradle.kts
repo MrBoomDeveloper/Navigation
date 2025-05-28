@@ -12,7 +12,6 @@ group = "ru.mrboomdev.navigation"
 version = property("library.version")!!
 
 kotlin {
-    applyDefaultHierarchyTemplate()
     jvm()
     
     androidLibrary {
@@ -40,8 +39,6 @@ kotlin {
 }
 
 mavenPublishing {
-    coordinates(group.toString(), "navigation-jetpack", version.toString())
-
     pom {
         name = "Navigation Jetpack by MrBoomDev"
         description = "An implementation of the library made by using Jetpack Navigation made by Jetbrains."

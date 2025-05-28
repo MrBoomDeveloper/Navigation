@@ -31,4 +31,4 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 compose = { id = "org.jetbrains.compose", version = "1.8.0-rc01" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.31.0" }
+maven-publish = { id = "com.vanniktech.maven.publish", version = "0.32.0" }

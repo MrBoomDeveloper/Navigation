@@ -9,7 +9,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,8 +27,8 @@ import kotlinx.serialization.json.Json
 internal fun <T: Any> JetpackNavigationHostImpl(
     modifier: Modifier,
     navigation: JetpackNavigation<T>,
-    enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition,
-    exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition,
+    enterTransition: AnimatedContentTransitionScope<*>.() -> EnterTransition,
+    exitTransition: AnimatedContentTransitionScope<*>.() -> ExitTransition,
     graph: NavigationGraph<T>
 ) {
     @OptIn(InternalNavigationApi::class)
@@ -111,17 +110,17 @@ inline fun <reified T: Any> JetpackNavigationHost(
     modifier: Modifier = Modifier,
     navigation: JetpackNavigation<T>,
 
-    noinline enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
+    noinline enterTransition: AnimatedContentTransitionScope<*>.() -> EnterTransition =
         { fadeIn(animationSpec = tween(700)) },
 
-    noinline exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition =
+    noinline exitTransition: AnimatedContentTransitionScope<*>.() -> ExitTransition =
         { fadeOut(animationSpec = tween(700)) },
 
-    noinline scope: NavigationGraph<T>.() -> Unit
+    noinline graph: NavigationGraph<T>.() -> Unit
 ) = JetpackNavigationHostImpl(
     modifier = modifier,
     navigation = navigation,
     enterTransition = enterTransition,
     exitTransition = exitTransition,
-    graph = remember(scope) { navigationGraph(scope) }
+    graph = remember(graph) { navigationGraph(graph) }
 )

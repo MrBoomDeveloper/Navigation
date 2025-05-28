@@ -12,7 +12,6 @@ group = "ru.mrboomdev.navigation"
 version = property("library.version")!!
 
 kotlin {
-    applyDefaultHierarchyTemplate()
     jvm()
     
     androidLibrary {
@@ -36,8 +35,6 @@ kotlin {
 }
 
 mavenPublishing {
-    coordinates(group.toString(), "navigation-core", version.toString())
-
     pom {
         name = "Navigation by MrBoomDev"
         description = "A simple navigation library for Compose Multiplatform projects."

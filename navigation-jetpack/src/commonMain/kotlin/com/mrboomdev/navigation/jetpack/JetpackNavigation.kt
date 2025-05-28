@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
 /**
  * @see rememberJetpackNavigation
  */
-class JetpackNavigation<T: Any> internal constructor(
+class JetpackNavigation<T: Any> @PublishedApi internal constructor(
     override val type: KClass<T>,
     override val parent: Navigation<*>?,
     val navController: NavHostController,
@@ -35,22 +35,15 @@ class JetpackNavigation<T: Any> internal constructor(
         get() = navController.previousBackStackEntry != null
 }
 
-@OptIn(InternalNavigationApi::class)
-@Composable
-@PublishedApi
-internal fun <T: Any> rememberJetpackNavigationImpl(
-    type: KClass<T>,
-    initialRoute: T
-): JetpackNavigation<T> {
-    val parent = currentNavigationOrNull()
-    val navController = rememberNavController()
-
-    return remember(type, parent, navController, initialRoute) {
-        JetpackNavigation(type, parent, navController, initialRoute)
-    }
-}
-
 @Composable
 inline fun <reified T: Any> rememberJetpackNavigation(
     initialRoute: T
-) = rememberJetpackNavigationImpl(T::class, initialRoute)
+): JetpackNavigation<T> {
+    @OptIn(InternalNavigationApi::class)
+    val parent = currentNavigationOrNull()
+    val navController = rememberNavController()
+
+    return remember(T::class, parent, navController, initialRoute) {
+        JetpackNavigation(T::class, parent, navController, initialRoute)
+    }
+}

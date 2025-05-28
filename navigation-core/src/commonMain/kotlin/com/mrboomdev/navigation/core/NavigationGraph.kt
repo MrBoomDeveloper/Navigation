@@ -2,8 +2,8 @@
 
 package com.mrboomdev.navigation.core
 
-import androidx.compose.runtime.*
-import kotlin.reflect.*
+import androidx.compose.runtime.Composable
+import kotlin.reflect.KClass
 
 class NavigationGraph<T: Any> internal constructor(
     @property:InternalNavigationApi val routes: MutableList<Pair<KClass<*>, @Composable (RouteScope.(Any) -> Unit)>>
@@ -18,18 +18,6 @@ class NavigationGraph<T: Any> internal constructor(
         }
         
         routes += graph.routes
-    }
-    
-    fun route(
-        clazz: KClass<T>, 
-        content: @Composable RouteScope.(T) -> Unit
-    ) {
-        if(isClosed) {
-            throw IllegalStateException("Navigation graph cannot be modified after it's creation!")
-        }
-        
-        @Suppress("UNCHECKED_CAST")
-        routes += (clazz to content) as Pair<KClass<*>, @Composable RouteScope.(Any) -> Unit>
     }
     
     inline fun <reified R: T> route(
