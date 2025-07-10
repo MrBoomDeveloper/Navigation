@@ -1,8 +1,12 @@
 package com.mrboomdev.navigation.core
 
+import kotlinx.coroutines.flow.Flow
 import kotlin.reflect.KClass
 
 interface Navigation<T: Any> {
+    val currentDestination: Flow<T>
+    val currentBackStack: Flow<List<T>>
+    
     val type: KClass<T>
     
     val parent: Navigation<*>?

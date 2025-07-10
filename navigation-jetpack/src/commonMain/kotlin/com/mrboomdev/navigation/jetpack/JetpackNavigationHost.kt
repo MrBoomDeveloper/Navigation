@@ -1,11 +1,7 @@
 package com.mrboomdev.navigation.jetpack
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -14,21 +10,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.savedstate.read
-import com.mrboomdev.navigation.core.InternalNavigationApi
-import com.mrboomdev.navigation.core.NavigationGraph
-import com.mrboomdev.navigation.core.ResultContract
-import com.mrboomdev.navigation.core.RouteScope
-import com.mrboomdev.navigation.core.navigationGraph
-import com.mrboomdev.navigation.core.provideCurrentNavigation
+import com.mrboomdev.navigation.core.*
 import kotlinx.serialization.json.Json
 
 @Composable
-@PublishedApi
-internal fun <T: Any> JetpackNavigationHostImpl(
-    modifier: Modifier,
+fun <T: Any> JetpackNavigationHost(
+    modifier: Modifier = Modifier,
     navigation: JetpackNavigation<T>,
-    enterTransition: AnimatedContentTransitionScope<*>.() -> EnterTransition,
-    exitTransition: AnimatedContentTransitionScope<*>.() -> ExitTransition,
+    
+    enterTransition: AnimatedContentTransitionScope<*>.() -> EnterTransition = 
+        { fadeIn(animationSpec = tween(700)) },
+    
+    exitTransition: AnimatedContentTransitionScope<*>.() -> ExitTransition = 
+        { fadeOut(animationSpec = tween(700)) },
+    
     graph: NavigationGraph<T>
 ) {
     @OptIn(InternalNavigationApi::class)
@@ -117,7 +112,7 @@ inline fun <reified T: Any> JetpackNavigationHost(
         { fadeOut(animationSpec = tween(700)) },
 
     noinline graph: NavigationGraph<T>.() -> Unit
-) = JetpackNavigationHostImpl(
+) = JetpackNavigationHost(
     modifier = modifier,
     navigation = navigation,
     enterTransition = enterTransition,

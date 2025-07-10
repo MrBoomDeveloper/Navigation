@@ -2,7 +2,6 @@ import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.library.multiplatform)
     alias(libs.plugins.maven.publish)
 }
@@ -14,36 +13,22 @@ kotlin {
     jvm()
 
     androidLibrary {
-        namespace = "com.mrboomdev.navigation.jetpack3"
+        namespace = "com.mrboomdev.navigation.deeplinks"
         compileSdk = 35
         minSdk = 24
     }
 
     sourceSets {
-        commonMain {
-            dependencies {
-                api(project(":navigation-core"))
-                implementation(libs.kotlin.stdlib)
-                implementation(libs.compose.navigation3.runtime)
-                implementation(libs.compose.navigation3.ui)
-                implementation(libs.compose.navigation3.viewmodel)
-            }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
         }
-
-//        commonTest {
-//            dependencies {
-//                implementation(libs.kotlin.test)
-//            }
-//        }
     }
 }
 
 mavenPublishing {
-    coordinates(group.toString(), "navigation-jetpack3", version.toString())
-
     pom {
-        name = "Jetpack Navigation3 by MrBoomDev"
-        description = "An implementation of the library made by using Jetpack Navigation3 made by Google."
+        name = "Navigation deeplinks by MrBoomDev"
+        description = "A simple navigation deeplinks library for Kotlin Multiplatform projects."
         url = "https://github.com/MrBoomDeveloper/Navigation"
         inceptionYear = "2025"
 

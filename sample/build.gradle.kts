@@ -28,6 +28,7 @@ kotlin {
             dependencies {
                 implementation(project(":navigation-core"))
                 implementation(project(":navigation-jetpack"))
+                implementation(project(":deeplinks"))
                 
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.kotlinx.serialization.json)

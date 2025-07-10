@@ -2,6 +2,7 @@
 
 package com.mrboomdev.navigation.jetpack
 
+import androidx.navigation.NavBackStackEntry
 import com.mrboomdev.navigation.core.InternalNavigationApi
 import com.mrboomdev.navigation.core.ResultContract
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -14,6 +15,39 @@ import kotlin.reflect.KClass
 
 internal expect fun encodeUri(uri: String): String
 internal expect fun decodeUri(uri: String): String
+
+internal fun entryToClass(entry: NavBackStackEntry): KClass<*> {
+    return findClass(entry.destination.route!!.substringBefore("?"))
+}
+
+private val cachedClasses = mutableMapOf<String, KClass<*>>()
+
+private fun findClass(className: String): KClass<*> {
+    return cachedClasses.getOrPut(className) {
+        findClassImpl(className)
+    }
+}
+
+private fun findClassImpl(className: String): KClass<*> {
+    var name = className
+    var firstException: ClassNotFoundException? = null
+
+    while(true) {
+        try {
+            return Class.forName(name).kotlin
+        } catch(e: ClassNotFoundException) {
+            if(firstException == null) {
+                firstException = e
+            }
+
+            if(!name.contains(".")) {
+                throw firstException
+            }
+
+            name = name.substringBeforeLast(".") + "$" + name.substringAfterLast(".")
+        }
+    }
+}
 
 @OptIn(ExperimentalEncodingApi::class, ExperimentalSerializationApi::class, InternalSerializationApi::class)
 internal fun routeOf(

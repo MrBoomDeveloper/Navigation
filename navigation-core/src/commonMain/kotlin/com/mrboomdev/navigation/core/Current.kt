@@ -106,7 +106,7 @@ inline fun <reified T: Any> currentNavigation() = currentNavigationSafe(T::class
 
 inline fun <reified T: Any> TypeSafeNavigation() = TypeSafeNavigation(T::class)
 
-class TypeSafeNavigation<T: Any> @PublishedApi internal constructor(private val type: KClass<T>) {
+class TypeSafeNavigation<T: Any>(private val type: KClass<T>) {
     @Composable
     fun current(): Navigation<T> = currentNavigationSafe(type)
 

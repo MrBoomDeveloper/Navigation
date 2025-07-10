@@ -1,28 +1,17 @@
 package com.mrboomdev.navigation.sample
 
+import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import com.mrboomdev.navigation.core.ResultContract
-import com.mrboomdev.navigation.core.Resulter
-import com.mrboomdev.navigation.core.TypeSafeNavigation
-import com.mrboomdev.navigation.core.safePop
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.mrboomdev.navigation.core.*
 import com.mrboomdev.navigation.jetpack.JetpackNavigationHost
 import com.mrboomdev.navigation.jetpack.NavigationResult
 import com.mrboomdev.navigation.jetpack.pushForResult
@@ -33,26 +22,54 @@ val AppNavigation = TypeSafeNavigation<Routes>()
 
 @Composable
 fun App() {
-    JetpackNavigationHost<Routes>(
-        navigation = rememberJetpackNavigation(Routes.ScreenA),
-        enterTransition = {
-            fadeIn(tween(500)) +
-                    slideInHorizontally(tween(350)) { it / 2 } +
-                    scaleIn(tween(250), initialScale = .95f)
-        },
+    val navigation = rememberJetpackNavigation<Routes>(Routes.ScreenA)
+    val currentBackStack by navigation.currentBackStack.collectAsState(emptyList())
+    val currentDestination by navigation.currentDestination.collectAsState(null)
+    
+    Column {
+        Text(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                .fillMaxWidth()
+                .padding(8.dp),
+            text = "Current backStack = ${currentBackStack.joinToString(", ")}"
+        )
+        
+        Text(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                .fillMaxWidth()
+                .padding(8.dp),
+            text = "Current destination = $currentDestination"
+        )
+        
+        JetpackNavigationHost(
+            navigation = navigation,
+            
+            enterTransition = {
+                fadeIn(tween(500)) +
+                        slideInHorizontally(tween(350)) { it / 2 } +
+                        scaleIn(tween(250), initialScale = .95f)
+            },
 
-        exitTransition = {
-            fadeOut(tween(500)) +
-                    slideOutHorizontally(tween(350)) +
-                    scaleOut(tween(250), targetScale = .95f)
-        }
-    ) {
-        route<Routes.ScreenA> { ScreenA() }
-        route<Routes.ScreenB> { ScreenB(it.value) }
-        route<Routes.ScreenC> { ScreenC(resulter!!) }
+            exitTransition = {
+                fadeOut(tween(500)) +
+                        slideOutHorizontally(tween(350)) +
+                        scaleOut(tween(250), targetScale = .95f)
+            },
+
+            graph = sealedNavigationGraph {
+                when(it) {
+                    Routes.ScreenA -> ScreenA()
+                    is Routes.ScreenB -> ScreenB(it.value)
+                    Routes.ScreenC -> ScreenC(resulter!!)
+                }
+            }
+        )
     }
 }
 
+@Serializable
 sealed interface Routes {
     @Serializable
     data object ScreenA: Routes
@@ -91,7 +108,7 @@ fun ScreenA() {
         }
         
         Button({ navigation.pop() }) {
-            Text("Try going back")
+            Text("navigation.pop()")
         }
 
         Button({ 

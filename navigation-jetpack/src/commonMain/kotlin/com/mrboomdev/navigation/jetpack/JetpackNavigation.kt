@@ -4,9 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.savedstate.read
 import com.mrboomdev.navigation.core.InternalNavigationApi
 import com.mrboomdev.navigation.core.Navigation
 import com.mrboomdev.navigation.core.currentNavigationOrNull
+import kotlinx.coroutines.flow.map
 import kotlin.reflect.KClass
 
 /**
@@ -18,6 +20,28 @@ class JetpackNavigation<T: Any> @PublishedApi internal constructor(
     val navController: NavHostController,
     val initialRoute: T
 ): Navigation<T> {
+    override val currentDestination = navController.currentBackStackEntryFlow.map {
+        @Suppress("UNCHECKED_CAST")
+        fromRouteData(
+            entryToClass(it) as KClass<T>, 
+            it.arguments!!.read { getString("data") }
+        )
+    }
+
+    override val currentBackStack = navController.currentBackStack.map { backStack ->
+        backStack.mapNotNull { entry ->
+            if(entry.destination.route == null) {
+                return@mapNotNull null
+            }
+            
+            @Suppress("UNCHECKED_CAST")
+            fromRouteData(
+                entryToClass(entry) as KClass<T>, 
+                entry.arguments!!.read { getString("data") }
+            )
+        }
+    }
+
     override fun push(destination: T) {
         navController.navigate(routeOf(destination, null, null))
     }
