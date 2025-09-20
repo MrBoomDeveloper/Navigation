@@ -4,6 +4,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
@@ -26,46 +27,51 @@ fun App() {
     val currentBackStack by navigation.currentBackStack.collectAsState(emptyList())
     val currentDestination by navigation.currentDestination.collectAsState(null)
     
-    Column {
-        Text(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                .fillMaxWidth()
-                .padding(8.dp),
-            text = "Current backStack = ${currentBackStack.joinToString(", ")}"
-        )
-        
-        Text(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                .fillMaxWidth()
-                .padding(8.dp),
-            text = "Current destination = $currentDestination"
-        )
-        
-        JetpackNavigationHost(
-            navigation = navigation,
-            
-            enterTransition = {
-                fadeIn(tween(500)) +
-                        slideInHorizontally(tween(350)) { it / 2 } +
-                        scaleIn(tween(250), initialScale = .95f)
-            },
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Column {
+            Text(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                text = "Current backStack = ${currentBackStack.joinToString(", ")}"
+            )
 
-            exitTransition = {
-                fadeOut(tween(500)) +
-                        slideOutHorizontally(tween(350)) +
-                        scaleOut(tween(250), targetScale = .95f)
-            },
+            Text(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                text = "Current destination = $currentDestination"
+            )
 
-            graph = sealedNavigationGraph {
-                when(it) {
-                    Routes.ScreenA -> ScreenA()
-                    is Routes.ScreenB -> ScreenB(it.value)
-                    Routes.ScreenC -> ScreenC(resulter!!)
+            JetpackNavigationHost(
+                navigation = navigation,
+
+                enterTransition = {
+                    fadeIn(tween(500)) +
+                            slideInHorizontally(tween(350)) { it / 2 } +
+                            scaleIn(tween(250), initialScale = .95f)
+                },
+
+                exitTransition = {
+                    fadeOut(tween(500)) +
+                            slideOutHorizontally(tween(350)) +
+                            scaleOut(tween(250), targetScale = .95f)
+                },
+
+                graph = sealedNavigationGraph {
+                    when(it) {
+                        Routes.ScreenA -> ScreenA()
+                        is Routes.ScreenB -> ScreenB(it.value)
+                        Routes.ScreenC -> ScreenC(resulter!!)
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }
 

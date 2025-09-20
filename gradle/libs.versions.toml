@@ -1,34 +1,35 @@
 [versions]
-agp = "8.10.0"
-kotlin = "2.1.20"
-compose = "1.8.0"
-nav3core = "1.0.0-alpha04"
+agp = "8.10.1"
+kotlin = "2.2.20"
+compose = "1.9.0"
+nav3core = "1.0.0-alpha09"
 
 [libraries]
-compose-navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version = "2.9.0-alpha17" }
+compose-navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version = "2.9.0" }
+
 compose-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "nav3core" }
 compose-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "nav3core" }
-compose-navigation3-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "1.0.0-alpha01" }
+compose-navigation3-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.10.0-alpha03" }
 
 # Kotlin
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.8.0" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.9.0" }
 
 # Compose
-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose" }
-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
 
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.10.1" }
-androidx-core = { group = "androidx.test", name = "core", version = "1.6.1" }
-material = { module = "com.google.android.material:material", version = "1.12.0" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.11.0" }
+androidx-core = { group = "androidx.test", name = "core", version = "1.7.0" }
+material = { module = "com.google.android.material:material", version = "1.13.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library-multiplatform = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-compose = { id = "org.jetbrains.compose", version = "1.8.0-rc01" }
+compose = { id = "org.jetbrains.compose", version = "1.9.0" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.33.0" }
+maven-publish = { id = "com.vanniktech.maven.publish", version = "0.34.0" }

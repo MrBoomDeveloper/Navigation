@@ -11,13 +11,13 @@ plugins {
 
 kotlin {
     applyDefaultHierarchyTemplate()
-//    jvm()
+    jvm()
 
     androidTarget {
         compilations.all {
             compileTaskProvider.configure {
                 compilerOptions {
-                    jvmTarget.set(JvmTarget.JVM_1_8)
+                    jvmTarget.set(JvmTarget.JVM_11)
                 }
             }
         }
@@ -48,6 +48,27 @@ kotlin {
                 implementation(libs.androidx.activity.compose)
             }
         }
+        
+        jvmMain.dependencies {
+            // For some fucking reason skiko isn't loaded by default
+            val osName = System.getProperty("os.name")
+            val osArch = System.getProperty("os.arch")
+
+            val targetOs = when {
+                osName == "Mac OS X" -> "macos"
+                osName.startsWith("Win") -> "windows"
+                osName.startsWith("Linux") -> "linux"
+                else -> throw UnsupportedOperationException("Unsupported platform $osName!")
+            }
+
+            val targetArch = when(osArch) {
+                "x86_64", "amd64" -> "x64"
+                "aarch64" -> "arm64"
+                else -> throw UnsupportedOperationException("Unsupported cpu acrhitecture $osArch!")
+            }
+
+            runtimeOnly("org.jetbrains.skiko:skiko-awt-runtime-$targetOs-$targetArch:0.9.4.2")
+        }
     }
 }
 
@@ -76,8 +97,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 

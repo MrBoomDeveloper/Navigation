@@ -17,6 +17,6 @@ dependencyResolutionManagement {
 rootProject.name = "Navigation"
 include(":navigation-core")
 include(":navigation-jetpack")
-include(":navigation-jetpack3")
+//include(":navigation-jetpack3")
 include(":deeplinks")
 include(":sample")
