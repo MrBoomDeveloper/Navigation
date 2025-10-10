@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import kotlin.reflect.KClass
+import kotlin.reflect.full.isSubclassOf
 
 private val LocalNavigation = staticCompositionLocalOf<Navigation<*>?> { null }
 
@@ -53,63 +54,83 @@ fun rootNavigation(): Navigation<Any> {
 
 @Composable
 @PublishedApi
-internal fun <T: Any> currentNavigationSafe(type: KClass<T>): Navigation<T> {
+internal fun <T: Any, N: Navigation<T>> currentNavigationSafe(
+    navigationType: KClass<N>,
+    type: KClass<T>
+): N {
     var current = LocalNavigation.current
         ?: throw IllegalStateException("No navigation components were declared!")
 
     if(type == Any::class) {
         @Suppress("UNCHECKED_CAST")
-        return current as Navigation<T>
+        return current as N
     }
 
     while(true) {
-        if(current.type == type) {
-            @Suppress("UNCHECKED_CAST")
-            return current as Navigation<T>
+        fun crash(): Nothing {
+            throw IllegalStateException("No navigation components with required type were declared!")
+        }
+        
+        if(current::class.isSubclassOf(navigationType) && current.type == type) {
+            @Suppress("UNCHECKED_CAST") 
+            return current as N
         }
 
         @Suppress("UNCHECKED_CAST")
-        current = current.parent as Navigation<Any>?
-            ?: throw IllegalStateException("No navigation components with required type were declared!")
+        current = current.parent as N? ?: crash()
     }
 }
 
 @Composable
 @PublishedApi
-internal fun <T: Any> rootNavigationSafe(type: KClass<T>): Navigation<T> {
-    var latestOk: Navigation<T>? = null
+internal fun <T: Any, N: Navigation<T>> rootNavigationSafe(
+    navigationType: KClass<N>,
+    type: KClass<T>
+): N {
+    var latestOk: N? = null
 
     var current = LocalNavigation.current
         ?: throw IllegalStateException("No navigation components were declared!")
 
+    fun crash(): Nothing {
+        throw IllegalStateException("No navigation components with required type were declared!")
+    }
+
     while(true) {
-        if(current.type == type) {
+        if(current::class.isSubclassOf(navigationType) && current.type == type) {
             @Suppress("UNCHECKED_CAST")
-            latestOk = current as Navigation<T>
+            latestOk = current as N
             continue
         }
 
         @Suppress("UNCHECKED_CAST")
-        current = current.parent as Navigation<Any>? ?: break
+        current = current.parent as N? ?: break
     }
 
-    return latestOk ?: throw IllegalStateException("No navigation components with required type were declared!")
+    return latestOk ?: crash()
 }
 
 @Composable
 @JvmName("rootNavigationGeneric")
-inline fun <reified T: Any> rootNavigation() = rootNavigationSafe(T::class)
+inline fun <reified T: Any, reified N: Navigation<T>> rootNavigation() = rootNavigationSafe(N::class, T::class)
 
 @Composable
 @JvmName("currentNavigationGeneric")
-inline fun <reified T: Any> currentNavigation() = currentNavigationSafe(T::class)
+inline fun <reified T: Any, reified N: Navigation<T>> currentNavigation() = currentNavigationSafe(N::class, T::class)
 
-inline fun <reified T: Any> TypeSafeNavigation() = TypeSafeNavigation(T::class)
+inline fun <reified T: Any, reified N: Navigation<T>> TypeSafeNavigation() = TypeSafeNavigation(N::class, T::class)
 
-class TypeSafeNavigation<T: Any>(private val type: KClass<T>) {
+@Suppress("UNCHECKED_CAST")
+@JvmName("TypeSafeNavigationCustom")
+inline fun <reified T: Any> TypeSafeNavigation() = TypeSafeNavigation(Navigation::class as KClass<Navigation<T>>, T::class)
+
+class TypeSafeNavigation<T: Any, N: Navigation<T>>(
+    private val navigationType: KClass<N>,
+    private val type: KClass<T>
+) {
     @Composable
-    fun current(): Navigation<T> = currentNavigationSafe(type)
+    fun current(): N = currentNavigationSafe(navigationType, type)
 
     @Composable
-    fun root(): Navigation<T> = rootNavigationSafe(type)
+    fun root(): N = rootNavigationSafe(navigationType, type)
 }

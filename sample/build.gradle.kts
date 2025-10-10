@@ -38,6 +38,7 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.material3)
                 implementation(libs.compose.navigation)
+                implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
             }
         }
 
@@ -74,13 +75,13 @@ kotlin {
 
 android {
     namespace = "com.mrboomdev.navigation.sample"
-    compileSdk = 35
+    compileSdk = properties["android.targetSdk"].toString().toInt()
 
     defaultConfig {
-        minSdk = 24
-        targetSdk = 35
+        compileSdk = properties["android.targetSdk"].toString().toInt()
+        minSdk = properties["android.minSdk"].toString().toInt()
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = properties["VERSION_NAME"].toString()
     }
     
     buildFeatures {

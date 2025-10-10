@@ -2,14 +2,14 @@
 agp = "8.10.1"
 kotlin = "2.2.20"
 compose = "1.9.0"
-nav3core = "1.0.0-alpha09"
+nav3core = "1.0.0-alpha10"
 
 [libraries]
 compose-navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version = "2.9.0" }
 
 compose-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "nav3core" }
 compose-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "nav3core" }
-compose-navigation3-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.10.0-alpha03" }
+compose-navigation3-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.10.0-alpha04" }
 
 # Kotlin
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }

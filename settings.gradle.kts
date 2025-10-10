@@ -17,6 +17,8 @@ dependencyResolutionManagement {
 rootProject.name = "Navigation"
 include(":navigation-core")
 include(":navigation-jetpack")
-//include(":navigation-jetpack3")
+//include(":navigation-jetpack3") //TODO: Uncomment once ready for multiplatform
 include(":deeplinks")
 include(":sample")
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

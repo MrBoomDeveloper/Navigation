@@ -10,6 +10,7 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.reflect.KClass
 
@@ -49,6 +50,7 @@ private fun findClassImpl(className: String): KClass<*> {
     }
 }
 
+@PublishedApi
 @OptIn(ExperimentalEncodingApi::class, ExperimentalSerializationApi::class, InternalSerializationApi::class)
 internal fun routeOf(
     destination: Any,
@@ -58,8 +60,9 @@ internal fun routeOf(
     append(destination::class.qualifiedName)
     append("?data=")
     
-    append(encodeUri(Json.encodeToString(
-        destination::class.serializer() as KSerializer<Any>, destination)))
+    @Suppress("UNCHECKED_CAST") 
+    val serializer = destination::class.serializer() as KSerializer<Any>
+    append(encodeUri(Json.encodeToString(serializer, destination)))
     
     if(resultContract != null) {
         append("&resultContract=")
@@ -84,3 +87,9 @@ internal fun <T: Any> fromRouteData(
     clazz: KClass<T>,
     data: String
 ) = Json.decodeFromString(clazz.serializer(), decodeUri(data))
+
+@Suppress("UNCHECKED_CAST")
+internal fun <T: Any> fromRoute(route: String) = fromRouteData(
+    clazz = findClass(route.substringBefore("?")) as KClass<T>, 
+    data = route.substringAfter("?data=").substringBefore("&")
+)

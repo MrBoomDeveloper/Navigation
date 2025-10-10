@@ -11,24 +11,20 @@ kotlin {
     
     androidLibrary {
         namespace = "com.mrboomdev.navigation.jetpack"
-        compileSdk = 35
-        minSdk = 24
+        compileSdk = properties["android.targetSdk"].toString().toInt()
+        minSdk = properties["android.minSdk"].toString().toInt()
     }
     
     sourceSets {
-        commonMain {
-            dependencies {
-                api(project(":navigation-core"))
-                implementation(libs.kotlin.stdlib)
-                implementation(libs.kotlinx.serialization.json)
-                implementation(libs.compose.navigation)
-            }
+        commonMain.dependencies {
+            api(projects.navigationCore)
+            implementation(libs.kotlin.stdlib)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.compose.navigation)
         }
 
-        commonTest {
-            dependencies {
-                implementation(libs.kotlin.test)
-            }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
         }
     }
 }

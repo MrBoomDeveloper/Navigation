@@ -12,7 +12,8 @@ internal class ResulterImpl(
 ) : Resulter {
     @OptIn(InternalSerializationApi::class)
     override fun invoke(result: Any) {
-        navEntry.savedStateHandle[key] = 
-            Json.encodeToString(result::class.serializer() as KSerializer<Any>, result)
+        @Suppress("UNCHECKED_CAST")
+        val serializer = result::class.serializer() as KSerializer<Any>
+        navEntry.savedStateHandle[key] = Json.encodeToString(serializer, result)
     }
 }

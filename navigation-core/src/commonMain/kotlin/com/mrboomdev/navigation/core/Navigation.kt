@@ -1,11 +1,15 @@
 package com.mrboomdev.navigation.core
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlin.reflect.KClass
 
 interface Navigation<T: Any> {
-    val currentDestination: Flow<T>
-    val currentBackStack: Flow<List<T>>
+    val currentDestinationFlow: Flow<T>
+    val currentBackStackFlow: Flow<List<T>>
+    
+    val currentDestination: T
+    val currentBackStack: List<T>
     
     val type: KClass<T>
     
@@ -52,3 +56,5 @@ fun <T: Any> Navigation<T>.replace(destination: T) {
 fun Navigation<*>.safePop() {
     if(canPop) pop()
 }
+
+operator fun <T: Any> Navigation<T>.plusAssign(route: T) = push(route)

@@ -11,8 +11,8 @@ kotlin {
     
     androidLibrary {
         namespace = "com.mrboomdev.navigation.core"
-        compileSdk = 35
-        minSdk = 24
+        compileSdk = properties["android.targetSdk"].toString().toInt()
+        minSdk = properties["android.minSdk"].toString().toInt()
     }
 
     sourceSets {

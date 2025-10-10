@@ -12,20 +12,36 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mrboomdev.navigation.core.*
+import com.mrboomdev.navigation.jetpack.JetpackNavigation
 import com.mrboomdev.navigation.jetpack.JetpackNavigationHost
 import com.mrboomdev.navigation.jetpack.NavigationResult
+import com.mrboomdev.navigation.jetpack.bringToTop
 import com.mrboomdev.navigation.jetpack.pushForResult
 import com.mrboomdev.navigation.jetpack.rememberJetpackNavigation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
-val AppNavigation = TypeSafeNavigation<Routes>()
+val AppNavigation = TypeSafeNavigation<Routes, JetpackNavigation<Routes>>()
+
+@Composable
+internal expect inline fun <reified T: Any> customRememberJetpackNavigation(
+    initialRoute: T
+): JetpackNavigation<T>
 
 @Composable
 fun App() {
-    val navigation = rememberJetpackNavigation<Routes>(Routes.ScreenA)
-    val currentBackStack by navigation.currentBackStack.collectAsState(emptyList())
-    val currentDestination by navigation.currentDestination.collectAsState(null)
+    val navigation = customRememberJetpackNavigation<Routes>(Routes.ScreenA)
+//    val navigation = rememberJetpackNavigation<Routes>(Routes.ScreenA)
+    val currentBackStack by navigation.currentBackStackFlow.collectAsState(emptyList())
+    val currentDestination by navigation.currentDestinationFlow.collectAsState(null)
     
     Surface(
         modifier = Modifier
@@ -47,6 +63,12 @@ fun App() {
                     .padding(8.dp),
                 text = "Current destination = $currentDestination"
             )
+
+            Button({
+                navigation.bringToTop(Routes.ScreenB("top"))
+            }) {
+                Text("Clear except Screen B")
+            }
 
             JetpackNavigationHost(
                 navigation = navigation,
@@ -132,16 +154,32 @@ fun ScreenA() {
     }
 }
 
+class ScreenBViewModel: ViewModel() {
+    private val _counter = MutableStateFlow(0)
+    val counter = _counter.asStateFlow()
+    
+    init {
+        viewModelScope.launch(Dispatchers.Default) { 
+            while(true) {
+                delay(1000)
+                _counter.emit(_counter.value + 1)
+            }
+        }
+    }
+}
+
 @Composable
-fun ScreenB(value: String) {
+fun ScreenB(value: String, viewModel: ScreenBViewModel = viewModel { ScreenBViewModel() }) {
     val navigation = AppNavigation.current()
     var resultSaved by rememberSaveable { mutableStateOf("") }
+    val counter by viewModel.counter.collectAsState()
 
     NavigationResult(Routes.ScreenC.resultContract) { 
         resultSaved = it
     }
     
     Column {
+        Text("Counter value = $counter")
         Text("Screen B")
         Text("Value = $value")
         Text("Result from Screen C = $resultSaved")

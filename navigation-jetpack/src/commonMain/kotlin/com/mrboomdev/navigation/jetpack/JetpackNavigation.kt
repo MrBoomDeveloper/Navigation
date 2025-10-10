@@ -20,7 +20,7 @@ class JetpackNavigation<T: Any> @PublishedApi internal constructor(
     val navController: NavHostController,
     val initialRoute: T
 ): Navigation<T> {
-    override val currentDestination = navController.currentBackStackEntryFlow.map {
+    override val currentDestinationFlow = navController.currentBackStackEntryFlow.map {
         @Suppress("UNCHECKED_CAST")
         fromRouteData(
             entryToClass(it) as KClass<T>, 
@@ -28,7 +28,7 @@ class JetpackNavigation<T: Any> @PublishedApi internal constructor(
         )
     }
 
-    override val currentBackStack = navController.currentBackStack.map { backStack ->
+    override val currentBackStackFlow = navController.currentBackStack.map { backStack ->
         backStack.mapNotNull { entry ->
             if(entry.destination.route == null) {
                 return@mapNotNull null
@@ -41,6 +41,32 @@ class JetpackNavigation<T: Any> @PublishedApi internal constructor(
             )
         }
     }
+
+    override val currentBackStack: List<T>
+        get() = navController.currentBackStack.value.mapNotNull { entry ->
+            if(entry.destination.route == null) {
+                return@mapNotNull null
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            fromRouteData(
+                entryToClass(entry) as KClass<T>,
+                entry.arguments!!.read { getString("data") }
+            )
+        }
+
+    override val currentDestination: T
+        get() = navController.currentBackStackEntry?.let { entry ->
+            if(entry.destination.route == null) {
+                return initialRoute
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            fromRouteData(
+                entryToClass(entry) as KClass<T>,
+                entry.arguments!!.read { getString("data") }
+            )
+        } ?: initialRoute
 
     override fun push(destination: T) {
         navController.navigate(routeOf(destination, null, null))
@@ -57,6 +83,8 @@ class JetpackNavigation<T: Any> @PublishedApi internal constructor(
 
     override val canPop: Boolean
         get() = navController.previousBackStackEntry != null
+    
+    companion object {}
 }
 
 @Composable
@@ -69,5 +97,28 @@ inline fun <reified T: Any> rememberJetpackNavigation(
 
     return remember(T::class, parent, navController, initialRoute) {
         JetpackNavigation(T::class, parent, navController, initialRoute)
+    }
+}
+
+fun <T: Any> JetpackNavigation<T>.bringToTop(route: T/*, removeOther: Boolean = true*/) {
+    val encodedRoute = routeOf(route, null, null)
+    
+    if(/*removeOther*/ true) {
+        navController.popBackStack(encodedRoute, inclusive = true, saveState = true)
+        clear()
+
+        navController.navigate(encodedRoute) {
+            restoreState = true
+        }
+
+        // A hacky fix to let us do our job fucking ass of this whore
+        repeat(navController.currentBackStack.value.filter { it.destination.route != null }.size - 1) {
+            navController.popBackStack()
+        }
+    } else {
+        navController.navigate(encodedRoute) {
+            launchSingleTop = true
+            restoreState = true
+        }
     }
 }
