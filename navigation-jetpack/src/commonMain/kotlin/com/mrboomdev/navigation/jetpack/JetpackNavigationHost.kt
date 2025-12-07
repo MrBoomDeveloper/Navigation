@@ -3,6 +3,7 @@ package com.mrboomdev.navigation.jetpack
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
@@ -67,11 +68,16 @@ fun <T: Any> JetpackNavigationHost(
                     )
                 ) { entry ->
                     val data = remember(entry) {
-                        fromRouteData(routeClass, entry.arguments?.read { getString("data") }!!)
+                        fromRouteData(routeClass, entry.arguments?.read {
+                            getString("data")
+                        }!!)
                     }
 
                     val resulter = remember(entry) {
-                        val resultKey = entry.arguments?.read { getStringOrNull("resultKey") }
+                        val resultKey = entry.arguments?.read {
+                            getStringOrNull("resultKey")
+                        }
+                        
                         val prevEntry = navigation.navController.previousBackStackEntry
 
                         // ResultContract<String, String> is being used because serialization
@@ -80,7 +86,11 @@ fun <T: Any> JetpackNavigationHost(
                         // just so that this compiler could shut the fuck up :)
                         val contract = entry.arguments?.read {
                             getStringOrNull("resultContract")
-                        }?.let { Json.decodeFromString<ResultContract<String, String>>(decodeUri(it)) }
+                        }?.let {
+                            Json.decodeFromString<ResultContract<String, String>>(
+                                decodeUri(it)
+                            )
+                        }
 
                         if(resultKey != null && prevEntry != null && contract != null) {
                             ResulterImpl(contract, resultKey, prevEntry)
@@ -93,7 +103,19 @@ fun <T: Any> JetpackNavigationHost(
                         }
                     }
 
-                    routeContent(scope, data)
+                    CompositionLocalProvider(
+                        LocalRouteInfo provides remember(
+                            resulter,
+                            data
+                        ) {
+                            object : RouteInfo {
+                                override val destination = data
+                                override val resulter = resulter
+                            }
+                        }
+                    ) {
+                        routeContent(scope, data)
+                    }
                 }
             }
         }

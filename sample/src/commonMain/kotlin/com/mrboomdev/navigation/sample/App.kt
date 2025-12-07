@@ -16,12 +16,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mrboomdev.navigation.core.*
-import com.mrboomdev.navigation.jetpack.JetpackNavigation
-import com.mrboomdev.navigation.jetpack.JetpackNavigationHost
-import com.mrboomdev.navigation.jetpack.NavigationResult
-import com.mrboomdev.navigation.jetpack.bringToTop
-import com.mrboomdev.navigation.jetpack.pushForResult
-import com.mrboomdev.navigation.jetpack.rememberJetpackNavigation
+import com.mrboomdev.navigation.jetpack.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -86,10 +81,14 @@ fun App() {
                 },
 
                 graph = sealedNavigationGraph {
-                    when(it) {
-                        Routes.ScreenA -> ScreenA()
-                        is Routes.ScreenB -> ScreenB(it.value)
-                        Routes.ScreenC -> ScreenC(resulter!!)
+                    Column {
+                        Text("Local route info: " + LocalRouteInfo.current.destination::class.qualifiedName)
+
+                        when (it) {
+                            Routes.ScreenA -> ScreenA()
+                            is Routes.ScreenB -> ScreenB(it.value)
+                            Routes.ScreenC -> ScreenC(resulter!!)
+                        }
                     }
                 }
             )

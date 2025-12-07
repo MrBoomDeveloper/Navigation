@@ -1,15 +1,14 @@
 [versions]
-agp = "8.10.1"
-kotlin = "2.2.20"
-compose = "1.9.0"
-nav3core = "1.0.0-alpha10"
+agp = "8.12.3"
+kotlin = "2.2.21"
+compose = "1.9.3"
 
 [libraries]
-compose-navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version = "2.9.0" }
+compose-navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version = "2.9.1" }
 
-compose-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "nav3core" }
-compose-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "nav3core" }
-compose-navigation3-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.10.0-alpha04" }
+compose-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version = "1.0.0" }
+compose-navigation3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version = "1.0.0-alpha06" }
+compose-navigation3-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.10.0-alpha06" }
 
 # Kotlin
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
@@ -21,7 +20,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
 
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.11.0" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.12.1" }
 androidx-core = { group = "androidx.test", name = "core", version = "1.7.0" }
 material = { module = "com.google.android.material:material", version = "1.13.0" }
 
@@ -30,6 +29,6 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library-multiplatform = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-compose = { id = "org.jetbrains.compose", version = "1.9.0" }
+compose = { id = "org.jetbrains.compose", version = "1.9.3" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.34.0" }
+maven-publish = { id = "com.vanniktech.maven.publish", version = "0.35.0" }

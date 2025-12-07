@@ -14,8 +14,8 @@ import com.mrboomdev.navigation.core.*
 internal fun <T: Any> JetpackNavigationHostImpl(
     modifier: Modifier,
     navigation: JetpackNavigation<T>,
-    enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition,
-    exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition,
+    enterTransition: AnimatedContentTransitionScope<T>.() -> EnterTransition,
+    exitTransition: AnimatedContentTransitionScope<T>.() -> ExitTransition,
     graph: NavigationGraph<T>
 ) {
     @OptIn(InternalNavigationApi::class)

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
@@ -13,6 +15,14 @@ kotlin {
         namespace = "com.mrboomdev.navigation.core"
         compileSdk = properties["android.targetSdk"].toString().toInt()
         minSdk = properties["android.minSdk"].toString().toInt()
+
+        compilations.all {
+            compileTaskProvider.configure {
+                compilerOptions {
+                    jvmTarget.set(JvmTarget.JVM_11)
+                }
+            }
+        }
     }
 
     sourceSets {
