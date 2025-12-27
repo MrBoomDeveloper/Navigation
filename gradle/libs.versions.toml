@@ -1,6 +1,6 @@
 [versions]
 agp = "8.12.3"
-kotlin = "2.2.21"
+kotlin = "2.3.0"
 compose = "1.9.3"
 
 [libraries]
@@ -8,7 +8,7 @@ compose-navigation = { group = "org.jetbrains.androidx.navigation", name = "navi
 
 compose-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version = "1.0.0" }
 compose-navigation3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version = "1.0.0-alpha06" }
-compose-navigation3-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.10.0-alpha06" }
+compose-navigation3-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.10.0-alpha07" }
 
 # Kotlin
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
@@ -20,7 +20,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
 
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.12.1" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.12.2" }
 androidx-core = { group = "androidx.test", name = "core", version = "1.7.0" }
 material = { module = "com.google.android.material:material", version = "1.13.0" }
 
